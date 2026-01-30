@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genotypic Ratio Tutorial & Quiz</title>
+<style>
+  /* ===== COLORFUL & FUN BOARD GAME DESIGN - STRUCTURE RETAINED ===== */
+  body {
+    margin: 0; 
+    font-family: 'Poppins', 'Comic Sans MS', sans-serif; 
+    /* Ultra colorful board game background */
+    background-color: #ff9a9e;
+    background-image: 
+      linear-gradient(135deg, #ff9a9e 0%, #fecfef 20%, #feada6 40%, #a1887f 60%, #a1c4fd 80%, #c2e9fb 100%);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Main Board Container */
+  .container {
+    width: 440px; 
+    background: rgba(255, 255, 255, 0.95); 
+    border-radius: 40px; 
+    padding: 25px; 
+    /* Multi-layered colorful border */
+    border: 10px solid #ff6f61;
+    outline: 5px solid #ffb703;
+    box-shadow: 0 20px 0 #d65a50, 0 30px 60px rgba(0,0,0,0.2); 
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  /* Decorative Corner DNA Strands */
+  .container::before {
+    content: "🧬"; position: absolute; top: -20px; left: -20px; font-size: 50px; transform: rotate(-20deg);
+  }
+  .container::after {
+    content: "🎲"; position: absolute; bottom: -20px; right: -20px; font-size: 50px; transform: rotate(20deg);
+  }
+
+  .welcome-banner {
+    background: linear-gradient(90deg, #ff0080, #ff8c00);
+    color: white;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: 900;
+    display: inline-block;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 0 #b30059;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  h2, h3 { margin: 10px 0; color: #ff6f61; text-shadow: 1px 1px 0px white; }
+  
+  /* Text Styles */
+  p, li { line-height: 1.4; color: #333; text-align: left; font-weight: 500; }
+  ol, ul { margin-left: 20px; text-align: left; }
+
+  /* Colorful Game Buttons */
+  .btn {
+    display: inline-block; 
+    margin: 15px 0; 
+    padding: 15px 35px; 
+    font-size: 18px; 
+    border: none; 
+    border-radius: 25px; 
+    background: linear-gradient(to bottom, #4cc9f0, #4361ee); 
+    color: white; 
+    cursor: pointer; 
+    font-weight: 900;
+    box-shadow: 0 6px 0 #3f37c9;
+    transition: 0.1s;
+    text-transform: uppercase;
+  }
+
+  .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #3f37c9; }
+
+  .screen { display: none; }
+
+  /* Punnett Square Area */
+  pre.question-punnett {
+    background: #ffffff; 
+    padding: 15px; 
+    border-radius: 20px; 
+    font-size: 20px; 
+    border: 5px solid #ffb703;
+    text-align: left; 
+    margin-bottom: 15px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
+    color: #2b2d42;
+  }
+
+  /* Answer Tiles */
+  .answers button {
+    width: 100%; 
+    padding: 18px 0; 
+    margin: 12px 0; 
+    font-size: 20px; 
+    border: none; 
+    border-radius: 25px; 
+    cursor: pointer; 
+    background: linear-gradient(135deg, #72efdd, #00d2ff); 
+    color: #03045e; 
+    font-weight: 900;
+    box-shadow: 0 8px 0 #0096c7;
+    transition: 0.1s;
+  }
+
+  .answers button:active { transform: translateY(4px); box-shadow: 0 2px 0 #0096c7; }
+  .answers button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+
+  /* Music Toggle */
+  #musicToggle {
+    position: fixed; bottom: 25px; right: 25px;
+    background: #fff; border: 4px solid #ffb703;
+    border-radius: 50%; width: 60px; height: 60px;
+    cursor: pointer; font-size: 25px; z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+
+  /* Animated Floating Icons */
+  .decor { position: fixed; font-size: 50px; opacity: 0.4; z-index: 1; pointer-events: none; }
+  .float1 { top: 10%; left: 5%; animation: bounce 4s infinite ease-in-out; }
+  .float2 { bottom: 10%; right: 5%; animation: bounce 5s infinite ease-in-out; }
+  .float3 { top: 20%; right: 8%; animation: spin 10s infinite linear; }
+  .float4 { bottom: 20%; left: 8%; animation: spin 8s infinite linear reverse; }
+
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* Modal Style */
+  .modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000;
+  }
+  .modal-content {
+    background: #fff; width: 85%; max-width: 400px; padding: 30px; 
+    border-radius: 35px; border: 10px solid #72efdd; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+<button id="musicToggle">🎵</button>
+
+<div class="decor float1">🧬</div>
+<div class="decor float2">🐍</div>
+<div class="decor float3">🪜</div>
+<div class="decor float4">🧪</div>
+
+<div class="container screen" id="startScreen">
+  <div class="welcome-banner">WELCOME TO GENOQUIZ</div>
+  <h2>🎮 Welcome!</h2>
+  <p style="text-align:center; font-weight:bold; font-size: 18px; color: #ff6f61;">🧬 Genotypic Ratio Mini-Game</p>
+  <p style="text-align:center;">Learn the concepts, answer the quiz,<br>and earn gift points for the Board Game.</p>
+  <button class="btn" id="startGameBtn">Start Mission ▶️</button>
+</div>
+
+<div class="container screen" id="screen1">
+  <h2 style="background: #ff6f61; color: white; border-radius: 15px; padding: 5px;">🧬 Genotypic Ratio Concepts 🎓</h2>
+
+  <div style="background: #fff0f3; padding: 15px; border-radius: 20px; border-left: 8px solid #ff6f61; margin-bottom: 10px;">
+    <p><b>Genotype</b><br>
+    👉 The gene combination a living thing has.<br>
+    It’s shown using letters like AA, Aa, or aa.</p>
+  </div>
+
+  <div style="background: #e0fbfc; padding: 15px; border-radius: 20px; border-left: 8px solid #4cc9f0; margin-bottom: 10px;">
+    <p><b>Homozygous</b><br>
+    👉 Both genes are the same.<br>
+    Examples: AA or aa</p>
+  </div>
+
+  <div style="background: #fefae0; padding: 15px; border-radius: 20px; border-left: 8px solid #ffb703; margin-bottom: 10px;">
+    <p><b>Heterozygous</b><br>
+    👉 The genes are different.<br>
+    Example: Aa</p>
+  </div>
+
+  <p><b>Punnett Square</b><br>
+  👉 A simple box chart used to guess what traits a baby might get from its parents.<br>
+  Each box shows one possible result.</p>
+
+  
+
+  <p><b>Genotypic Ratio</b><br>
+  👉 How many times each gene combination appears.<br>
+  Example: 1 AA : 2 Aa : 1 aa</p>
+
+  <button class="btn" id="next1">Next Turn ➡️</button>
+</div>
+
+<div class="container screen" id="screen2">
+  <h2 style="color: #4361ee;">TUTORIAL HOW TO INTERPRET PUNNETT SQUARE 📝</h2>
+  <h3>Sample Question 📝</h3>
+  <p><b>Question:</b> If Aa mates with Aa, what is the genotypic ratio?</p>
+  <pre class="question-punnett">
+  A    a
+---------
+A | AA | Aa |
+a | Aa | aa |
+---------
+  </pre>
+  <div style="background: #fff; padding: 15px; border-radius: 20px; border: 2px solid #ddd;">
+    <p><b>Step by Step:</b></p>
+    <ol>
+      <li>Each parent can give A or a.</li>
+      <li>List all possible offspring: AA, Aa, Aa, aa.</li>
+      <li>Count each genotype:
+        <ul>
+          <li>AA = 1</li>
+          <li>Aa = 2</li>
+          <li>aa = 1</li>
+        </ul>
+      </li>
+      <li>Genotypic ratio = <b>1 : 2 : 1 ✅</b></li>
+    </ol>
+  </div>
+  <button class="btn" id="next2">Continue ➡️</button>
+</div>
+
+<div class="container screen" id="screen3">
+  <div style="font-size: 60px;">🎲</div>
+  <h2>Before You Proceed</h2>
+  <p style="text-align:center; font-weight:bold; font-size: 18px;">
+    Answer the quiz correctly to earn gift points you can use in the Board Game!
+  </p>
+  <button class="btn" id="startQuiz" style="background: #ffb703; box-shadow: 0 6px 0 #e09f00;">Enter Quiz ▶️</button>
+</div>
+
+<div class="container screen" id="quizScreen">
+  <div style="background:#ff6f61; color:white; padding:10px 25px; border-radius:50px; display:inline-block; font-weight:900; box-shadow: 0 4px 0 #d65a50;">
+    GIFT POINTS: <span id="score">0</span>
+  </div>
+  <h2 style="margin-top:20px;">Genotypic Ratio Quiz</h2>
+  <div class="question" id="question" style="margin:15px 0; font-weight:bold; text-align:center; font-size: 18px;"></div>
+  <pre class="question-punnett" id="questionPunnett"></pre>
+  <div class="answers">
+    <button id="btn1"></button>
+    <button id="btn2"></button>
+    <button id="btn3"></button>
+  </div>
+</div>
+
+<div class="container screen" id="screen4">
+  <div style="font-size: 70px;">🏆</div>
+  <h2>🎉 Points Secured!</h2>
+  <p style="text-align: center;">
+    Congrats! You earned gift points — check your Point Card to see the exact amount. 
+    You can now claim them and write it on the Scoring Board.
+  </p>
+  <p style="text-align: center; font-weight: bold;">Exit now and return to the Board Game!</p>
+</div>
+
+<div class="container screen" id="screenWrong">
+  <div style="font-size: 70px;">🐍</div>
+  <h2>❌ Oops!</h2>
+  <p style="text-align:center; font-weight: bold;">
+    Sorry, incorrect.<br>
+    You gained <b>no points</b>.<br><br>
+    EXIT NOW AND GO BACK TO THE BOARD GAME.
+  </p>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle" style="font-size: 30px;"></h3>
+    <pre id="punnett" style="font-family:monospace; background:#f0f0f0; padding:15px; border-radius:15px; font-weight: bold;"></pre>
+    <p id="modalExplanation" style="background: #e0fbfc; padding: 10px; border-radius: 10px;"></p>
+    <button class="btn" id="okBtn">Next Turn 🎲</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const screens = ["startScreen","screen1","screen2","screen3","quizScreen","screen4","screenWrong"];
+
+  // Music Logic
+  const music = document.getElementById("bgMusic");
+  const musicBtn = document.getElementById("musicToggle");
+  let playing = false;
+  musicBtn.onclick = () => {
+    if(!playing) { music.play(); musicBtn.innerText = "⏸️"; }
+    else { music.pause(); musicBtn.innerText = "🎵"; }
+    playing = !playing;
+  };
+
+  function showScreen(id){
+    screens.forEach(s=>document.getElementById(s).style.display="none");
+    document.getElementById(id).style.display="block";
+  }
+
+  showScreen("startScreen");
+
+  document.getElementById("startGameBtn").onclick = ()=>showScreen("screen1");
+  document.getElementById("next1").onclick = ()=>showScreen("screen2");
+  document.getElementById("next2").onclick = ()=>showScreen("screen3");
+  document.getElementById("startQuiz").onclick = ()=>showScreen("quizScreen");
+
+  const scoreEl = document.getElementById("score");
+  const questionEl = document.getElementById("question");
+  const questionPunnettEl = document.getElementById("questionPunnett");
+  const btns = [btn1,btn2,btn3];
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const punnett = document.getElementById("punnett");
+  const explanation = document.getElementById("modalExplanation");
+  const okBtn = document.getElementById("okBtn");
+
+  let score=0, answered=false;
+
+  const questionsPool=[
+    {q:"If two heterozygous parents (Aa × Aa) mate, what is the genotypic ratio?",options:["1:2:1","3:1","All Aa"],correct:0,punnett:`  A   a
+---------
+A | AA | Aa |
+a | Aa | aa |
+---------`,explanation:`Step by step:
+1. Each parent can give A or a
+2. List babies: AA, Aa, Aa, aa
+3. Count: AA=1, Aa=2, aa=1
+👉 Genotypic ratio = 1:2:1`}
+  ];
+
+  let q = questionsPool[Math.floor(Math.random()*questionsPool.length)];
+  questionEl.innerText = q.q;
+  questionPunnettEl.innerText = q.punnett;
+
+  btns.forEach((btn,i)=>{
+    btn.innerText = q.options[i];
+    btn.onclick = ()=>{
+      if(answered) return;
+      answered=true;
+      btns.forEach(b=>b.disabled=true);
+      score = i===q.correct?5:0;
+      scoreEl.innerText = score;
+      modalTitle.innerText = i===q.correct?"JACKPOT! 🎉":"SLIPPED! ❌";
+      punnett.innerText = q.punnett;
+      explanation.innerText = q.explanation;
+      modal.style.display="flex";
+      okBtn.onclick=()=>{
+        modal.style.display="none";
+        showScreen(i===q.correct?"screen4":"screenWrong");
+      };
+    };
+  });
+});
+</script>
+
+</body>
+</html>
